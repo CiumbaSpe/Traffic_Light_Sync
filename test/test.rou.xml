@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-01-27 15:22:42 by Eclipse SUMO netedit Version 1.21.0-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+
+    <vType id="normal_car" vClass="passenger" maxSpeed="40" speedFactor="1.0" speedDev="0.0" sigma="0.0" accel="60" decel="60"/>
+    <!-- <vType id="normal_car" vClass="passenger" maxSpeed="40" speedFactor="1.0" speedDev="0.0" sigma="0.0" accel="0.1" decel="0.1"/> -->
+
+    <!-- tangential flows -->
+    <flow id="tan_ltr" type="normal_car" begin="0" end="50000" period="exp(0.3)" from="E1" to="E3" departSpeed="max" departLane="best"/>
+
+</routes>
