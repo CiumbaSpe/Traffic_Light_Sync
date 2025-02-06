@@ -1,16 +1,12 @@
 from simulator import Simulation
-from utils import plot_simulation_graph
-from setting import * 
+from utils import setting_to_stdout, modify_rou_flow_rate
 from stats import Statistics
+import setting
 
 def main():
 
-    print(f"Number of semaphores {SEMAPHORES}")
-    print(f"Number of configurations: {CONFIGURATION} different offsets")
-    print(f"Number of runs per configuration: {RUNS}")
-    print(f"Numebr of steps per runs: {STEP}")
-    print(f"Number of warm-up steps: {WARM_UP}")
-    print(f"Results will be saved in {NAME}\n")
+    setting_to_stdout()
+    modify_rou_flow_rate(setting.TANGENTIAL_FLOW)
 
     sim = Simulation()
     stats = Statistics()    

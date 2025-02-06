@@ -4,6 +4,7 @@ import scipy.stats as st
 import setting
 from simulator import Simulation
 from tracker import PerformanceTracker
+from typing import Optional
 
 class Statistics: 
     def __init__(self):
@@ -72,7 +73,22 @@ class Statistics:
 
         return data_frame_for_obs
 
-    def evaluate_metrics(self, config: list[list[PerformanceTracker]], sim = None):
+    def evaluate_metrics(self, config: list[list[PerformanceTracker]], sim : Optional[Simulation]) -> list[pd.DataFrame]:
+        """
+        Evaluate metrics for multiple configurations and optionally update DataFrame indices using simulation parameters.
+        This method takes a list of configurations, where each configuration is a list of PerformanceTracker objects.
+        It computes metrics for every observation in each configuration, then concatenates the metrics across configurations
+        observation-wise. If a Simulation instance is provided, the indices of the resulting DataFrames are reset based on the
+        simulation's 'configuration' and 'configuration_step' attributes, formatted as "config_<number>".
+        
+        Parameters:
+            config (list[list[PerformanceTracker]]): A list where each element is a list of PerformanceTracker objects.
+            sim (Optional[Simulation], optional): A Simulation instance used to adjust DataFrame indices. Defaults to None.
+        
+        Returns:
+            list[pd.DataFrame]: A list of DataFrames, each containing the concatenated metrics for corresponding observations
+                    across all configurations.
+        """
         config_stats = [] # it will store statics for each configuration
         for obs in config:
             config_stats.append(self.evaluate_on_observation(obs))
@@ -93,7 +109,7 @@ class Statistics:
 
         return combined_df
 
-    def save_stats(self, combined_df, index=False):
+    def save_stats(self, combined_df : list[pd.DataFrame], index=False):
         for i in combined_df:
             i.to_csv(f"{self.name}_{i.attrs['name']}.csv", index=index)  # Set index=False to avoid saving the index column
 

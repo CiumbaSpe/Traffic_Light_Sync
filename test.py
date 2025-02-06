@@ -1,7 +1,8 @@
 from simulator import Simulation
 from stats import Statistics
+from tls import TrafficLightSystem
 
-if __name__ == '__main__':
+def test_simulator():
     sim = Simulation()
 
     sim.runs = 3
@@ -15,3 +16,7 @@ if __name__ == '__main__':
     stats = Statistics()
     df = stats.evaluate_metrics(obs, sim)
     stats.save_stats(df, index=True)
+
+if __name__ == '__main__':
+    test_simulator()
+    

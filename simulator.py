@@ -2,16 +2,17 @@ import traci
 import os
 import setting
 from tracker import PerformanceTracker
+from tls import TrafficLightSystem
 
 class Simulation: 
     def __init__(self):
-        self.warm_up = setting.WARM_UP                          # warm-up period
-        self.runs = setting.RUNS                                # number of runs
-        self.configuration = setting.CONFIGURATION              # number of configurations
-        self.configuration_step = setting.CONFIGURATION_STEP    # how much configuration iterates
-        self.track = PerformanceTracker()
+        self.warm_up : int = setting.WARM_UP                          # warm-up period
+        self.runs : int = setting.RUNS                                # number of runs
+        self.configuration : int = setting.CONFIGURATION              # number of configurations
+        self.configuration_step : int = setting.CONFIGURATION_STEP    # how much configuration iterates
+        self.track : PerformanceTracker = PerformanceTracker()
 
-    def simulation_run(self, configuration=0, gui=False):
+    def simulation_run(self, configuration: int = 0, gui=False):
         """ single simulation run """
         sumoBinary = 'sumo-gui' if gui else 'sumo'
         sumoBinary = os.popen(f'which {sumoBinary}').read().strip()
@@ -20,17 +21,9 @@ class Simulation:
         traci.start(sumoCmd)
 
         track = PerformanceTracker() # create the object in which to store performance metrics of the run
+        TrafficLightSystem(traci.trafficlight.getIDList(), config=configuration)
 
-        step = 0 
-        # Get a list of all traffic light IDs 
-        traffic_light_ids = traci.trafficlight.getIDList()
-        
-        # Set the offset for each traffic light
-        for tl_id in traffic_light_ids: 
-            traci.trafficlight.setPhase(tl_id, 0)
-            for _ in range(configuration):
-                step += 1
-                traci.simulationStep()
+        step = traci.simulation.getTime()
 
         while traci.simulation.getMinExpectedNumber() > 0:
             traci.simulationStep()
