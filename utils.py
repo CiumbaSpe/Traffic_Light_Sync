@@ -1,14 +1,4 @@
 import matplotlib.pyplot as plt
-import itertools
-
-def unique_permutations(arr):
-    permutations = list(itertools.permutations(arr))    # generate all permutations
-    permutations = [list(p) for p in permutations]      # convert tuples to lists
-    unique_perms = []                                   # store unique permutations
-    for perm in permutations:                           # iterate through all permutations
-        if perm[::-1] not in unique_perms:              # avoid adding reverse duplicates
-            unique_perms.append(perm)                   # add the permutation to the list
-    return unique_perms
 
 
 def plot_simulation_graph(step, warm_up, completed_lifetimes):
@@ -38,8 +28,5 @@ def plot_simulation_graph(step, warm_up, completed_lifetimes):
     plt.show()
 
 if __name__ == "__main__":
-    # plot_simulation_graph(1000, 100, [10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
-    a = unique_permutations([1, 2, 3, 4])
-    print(a)
-    print(len(a)) 
+    pass
 

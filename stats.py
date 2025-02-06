@@ -2,13 +2,15 @@ import pandas as pd
 import numpy as np
 import scipy.stats as st
 import setting
+from simulator import Simulation
+from tracker import PerformanceTracker
 
 class Statistics: 
     def __init__(self):
         self.name = setting.NAME
         pass
 
-    def metrics_type(self, value):
+    def metrics_type(self, value: any) -> str:
         """
         Determine the metric type based on the value.
 
@@ -23,61 +25,54 @@ class Statistics:
             return "scalar"
         return None
     
-    def evaluate_on_observation(self, obs):
+    def evaluate_on_observation(self, obs: list[PerformanceTracker]) -> list[pd.DataFrame]:
         """
         Evaluate statistics for each metric (attribute) in the observation.
 
         Arguments:
-            obs: A list of objects with attributes to be analyzed.
+            obs: A list of tracker objects with attributes to be analyzed.
 
         Returns:
             A list of DataFrames, each containing statistics for one metric.
         """
-        if not obs:
-            return []
 
         data_frame_for_obs = []
         # Get the list of keys from the first object
-        for key in obs[0].__dict__.keys():
-            # Determine the type based on the first object's value for the key
-            metric_type = self.metrics_type(getattr(obs[0], key, None))
-            if metric_type is None:
-                continue
+        for key, _ in obs[0].metrics_for_stats.items():
 
             values = []
             # Aggregate values from all objects for the given key
             for obj in obs:
-                value = getattr(obj, key, None)
+                value = obj.metrics_for_stats[key]
                 current_type = self.metrics_type(value)
                 if current_type == "array":
                     values.append(np.mean(value))
                 elif current_type == "scalar":
                     values.append(value)
 
-            if values:
-                sample_mean = np.mean(values)
-                sample_variance = np.var(values, ddof=1)
-                var_mean = sample_variance / len(values)
+            sample_mean = np.mean(values)
+            sample_variance = np.var(values, ddof=1)
+            var_mean = sample_variance / len(values)
 
-                # Calculate the t-critical value for the confidence interval
-                dof = len(values) - 1
-                t_critical = st.t.ppf(1 - setting.ALPHA / 2, dof)
-                margin_error = t_critical * np.sqrt(var_mean)
+            # Calculate the t-critical value for the confidence interval
+            dof = len(values) - 1
+            t_critical = st.t.ppf(1 - setting.ALPHA / 2, dof)
+            margin_error = t_critical * np.sqrt(var_mean)
 
-                # Create a DataFrame for the metric
-                df = pd.DataFrame({
-                    'mean': [sample_mean],
-                    'var': [sample_variance],
-                    'var_mean': [var_mean],
-                    'ci_lower': [sample_mean - margin_error],
-                    'ci_upper': [sample_mean + margin_error]
-                })
-                df.attrs['name'] = key
-                data_frame_for_obs.append(df)
+            # Create a DataFrame for the metric
+            df = pd.DataFrame({
+                'mean': [sample_mean],
+                'var': [sample_variance],
+                'var_mean': [var_mean],
+                'ci_lower': [sample_mean - margin_error],
+                'ci_upper': [sample_mean + margin_error]
+            })
+            df.attrs['name'] = key
+            data_frame_for_obs.append(df)
 
         return data_frame_for_obs
 
-    def evaluate_metrics(self, config, sim = None):
+    def evaluate_metrics(self, config: list[list[PerformanceTracker]], sim = None):
         config_stats = [] # it will store statics for each configuration
         for obs in config:
             config_stats.append(self.evaluate_on_observation(obs))
@@ -91,7 +86,7 @@ class Statistics:
                 concat_metrics = pd.concat([concat_metrics, config_stats[set_of_obs][metrics]], ignore_index=True)
             
             if sim is not None:
-                idx = [f"perm_{str(i)}_config_{str(j)}" for i in range(sim.permutations) for j in range(0, sim.configuration, sim.configuration_step)]
+                idx = [f"config_{str(i)}" for i in range(0, sim.configuration, sim.configuration_step)]
                 concat_metrics.index = idx
 
             combined_df.append(concat_metrics)

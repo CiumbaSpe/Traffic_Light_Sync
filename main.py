@@ -1,4 +1,3 @@
-
 from simulator import Simulation
 from utils import plot_simulation_graph
 from setting import * 
@@ -6,7 +5,7 @@ from stats import Statistics
 
 def main():
 
-    print(f"Numner of permutations over {SEMAPHORES} semaphores: {PERMUTATIONS}")
+    print(f"Number of semaphores {SEMAPHORES}")
     print(f"Number of configurations: {CONFIGURATION} different offsets")
     print(f"Number of runs per configuration: {RUNS}")
     print(f"Numebr of steps per runs: {STEP}")
