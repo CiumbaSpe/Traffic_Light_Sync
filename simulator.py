@@ -49,8 +49,7 @@ class Simulation:
         observations = []
         for i in range(self.runs):
             print(f"### Running simulation {i}")
-            completed_lifetimes = self.simulation_run(configuration, gui=False)
-            observations.append(completed_lifetimes)
+            observations.append(self.simulation_run(configuration, gui=False))
         return observations
 
 if __name__ == '__main__':

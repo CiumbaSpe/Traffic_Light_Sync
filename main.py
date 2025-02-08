@@ -6,7 +6,7 @@ import setting
 def main():
 
     setting_to_stdout()
-    modify_rou_flow_rate(setting.TANGENTIAL_FLOW)
+    modify_rou_flow_rate(setting.ROU_PATH, setting.TANGENTIAL_FLOW)
 
     sim = Simulation()
     stats = Statistics()    

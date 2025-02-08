@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import setting
 import xml.etree.ElementTree as ET
-
+import math
 
 def setting_to_stdout():
     print(f"Number of semaphores {setting.SEMAPHORES}")
@@ -22,6 +22,8 @@ def modify_rou_flow_rate(file_path, value):
     for flow in root.findall('flow'):
         if flow.get('id') in ['tan_ltr', 'tan_rtl']:
             flow.set('period', f'exp({str(value)})')  # Change this value as needed
+        else:
+            flow.set('period', f'exp({str(math.floor(value*100/3)/100)})')
 
     # Write the modified XML back to the file
     tree.write(file_path)
@@ -55,4 +57,4 @@ def plot_simulation_graph(step, warm_up, completed_lifetimes):
 
 if __name__ == "__main__":
     # Call the function with the XML file path
-    modify_xml('prova.xml', 0.1)  # Change 'input.xml' to the path of your XML file
+    modify_rou_flow_rate('prova.xml', 0.1)  # Change 'input.xml' to the path of your XML file
