@@ -9,7 +9,7 @@ class TrafficLightSystem:
         self.cycle_time = setting.TLS_TOTAL_TIME
         self.traffic_lights = tls
         self.configuration = config
-        self.set_cycle() # set the cycle of the traffic light
+        # self.set_cycle() # set the cycle of the traffic light
         self.set_phase()
 
     def set_cycle(self):
