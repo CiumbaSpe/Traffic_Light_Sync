@@ -13,8 +13,8 @@ def main():
 
     config = sim.multiple_runs()
 
-    
-    stats.save_stats(stats.evaluate_metrics(config, sim), index=True)
+
+    stats.evaluate_metrics(config, sim)
 
     # Plot the simulation graph
     # plot_simulation_graph(sim_step, 1000, completed_lifetimes)
