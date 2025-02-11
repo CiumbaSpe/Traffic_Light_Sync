@@ -43,8 +43,8 @@ class Statistics:
 
             values = []
             # Aggregate values from all objects for the given key
-            for obj in obs[track_pos]:
-                value = obj.metrics_for_stats[key]
+            for i in range(len(obs)):
+                value = obs[i][track_pos].metrics_for_stats[key]
                 current_type = self.metrics_type(value)
                 if current_type == "array":
                     values.append(np.mean(value))
