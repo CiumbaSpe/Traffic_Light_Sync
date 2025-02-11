@@ -1,16 +1,16 @@
 import traci
 import os
 import setting
-from tracker import PerformanceTracker
+from tracker import PerformanceTracker, JointTracker
 from tls import TrafficLightSystem
 
 class Simulation: 
-    def __init__(self):
+    def __init__(self, junction : str = None):
         self.warm_up : int = setting.WARM_UP                          # warm-up period
         self.runs : int = setting.RUNS                                # number of runs
         self.configuration : int = setting.CONFIGURATION              # number of configurations
         self.configuration_step : int = setting.CONFIGURATION_STEP    # how much configuration iterates
-        self.track : PerformanceTracker = PerformanceTracker()
+        self.junction = junction
 
     def simulation_run(self, configuration: int = 0, gui=False):
         """ single simulation run """
@@ -20,7 +20,10 @@ class Simulation:
         sumoCmd = [sumoBinary, "-c", "lightSync.sumocfg", "--random"]
         traci.start(sumoCmd)
 
-        track = PerformanceTracker() # create the object in which to store performance metrics of the run
+        trackers = [PerformanceTracker()]
+        if(self.junction is not None):
+            trackers.append(JointTracker(self.junction))
+
         TrafficLightSystem(traci.trafficlight.getIDList(), config=configuration)
 
         step = traci.simulation.getTime()
@@ -28,13 +31,13 @@ class Simulation:
         while traci.simulation.getMinExpectedNumber() > 0:
             traci.simulationStep()
             if(step > self.warm_up):
-                track.update()
+                [tracker.update() for tracker in trackers]
             step += 1
 
-        track.simulation_end()
+        [tracker.simulation_end() for tracker in trackers]
         traci.close(False) # close the connection to SUMO
 
-        return track
+        return trackers
 
     def multiple_runs(self): # systematically try all combinations of parameters
         """ Run the simulation with all possible combinations of parameters """

@@ -23,7 +23,7 @@ def modify_rou_flow_rate(file_path, value):
         if flow.get('id') in ['tan_ltr', 'tan_rtl']:
             flow.set('period', f'exp({str(value)})')  # Change this value as needed
         else:
-            flow.set('period', f'exp({str(math.floor(value*100/3)/100)})')
+            flow.set('period', f'exp({str(math.floor(value*1000/3)/1000)})')
 
     # Write the modified XML back to the file
     tree.write(file_path)

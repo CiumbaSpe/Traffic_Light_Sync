@@ -311,27 +311,27 @@
     </edge>
 
     <tlLogic id="J1" type="static" programID="0" offset="0">
-        <phase duration="13" state="rGGrGG"/>
+        <phase duration="28" state="rGGrGG"/>
         <phase duration="2"  state="ryyryy"/>
-        <phase duration="13" state="GrrGrr"/>
+        <phase duration="28" state="GrrGrr"/>
         <phase duration="2"  state="yrryrr"/>
     </tlLogic>
     <tlLogic id="J2" type="static" programID="0" offset="0">
-        <phase duration="13" state="rGGrGG"/>
+        <phase duration="28" state="rGGrGG"/>
         <phase duration="2"  state="ryyryy"/>
-        <phase duration="13" state="GrrGrr"/>
+        <phase duration="28" state="GrrGrr"/>
         <phase duration="2"  state="yrryrr"/>
     </tlLogic>
     <tlLogic id="J3" type="static" programID="0" offset="0">
-        <phase duration="13" state="rGGrGG"/>
+        <phase duration="28" state="rGGrGG"/>
         <phase duration="2"  state="ryyryy"/>
-        <phase duration="13" state="GrrGrr"/>
+        <phase duration="28" state="GrrGrr"/>
         <phase duration="2"  state="yrryrr"/>
     </tlLogic>
     <tlLogic id="J4" type="static" programID="0" offset="0">
-        <phase duration="13" state="rGGrGG"/>
+        <phase duration="28" state="rGGrGG"/>
         <phase duration="2"  state="ryyryy"/>
-        <phase duration="13" state="GrrGrr"/>
+        <phase duration="28" state="GrrGrr"/>
         <phase duration="2"  state="yrryrr"/>
     </tlLogic>
 

@@ -13,6 +13,7 @@ def main():
 
     config = sim.multiple_runs()
 
+    
     stats.save_stats(stats.evaluate_metrics(config, sim), index=True)
 
     # Plot the simulation graph

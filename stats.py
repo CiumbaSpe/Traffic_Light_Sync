@@ -3,7 +3,7 @@ import numpy as np
 import scipy.stats as st
 import setting
 from simulator import Simulation
-from tracker import PerformanceTracker
+from tracker import PerformanceTracker, JointTracker
 from typing import Optional
 
 class Statistics: 
@@ -26,7 +26,7 @@ class Statistics:
             return "scalar"
         return None
     
-    def evaluate_on_observation(self, obs: list[PerformanceTracker]) -> list[pd.DataFrame]:
+    def evaluate_on_observation(self, obs: list[list[PerformanceTracker|JointTracker]], track_pos : int = 0) -> list[pd.DataFrame]:
         """
         Evaluate statistics for each metric (attribute) in the observation.
 
@@ -39,11 +39,11 @@ class Statistics:
 
         data_frame_for_obs = []
         # Get the list of keys from the first object
-        for key, _ in obs[0].metrics_for_stats.items():
+        for key, _ in obs[0][track_pos].metrics_for_stats.items():
 
             values = []
             # Aggregate values from all objects for the given key
-            for obj in obs:
+            for obj in obs[track_pos]:
                 value = obj.metrics_for_stats[key]
                 current_type = self.metrics_type(value)
                 if current_type == "array":
@@ -68,12 +68,12 @@ class Statistics:
                 'ci_lower': [sample_mean - margin_error],
                 'ci_upper': [sample_mean + margin_error]
             })
-            df.attrs['name'] = key
+            df.attrs['name'] = f"{obs[0][track_pos].name}_{key}" 
             data_frame_for_obs.append(df)
 
         return data_frame_for_obs
 
-    def evaluate_metrics(self, config: list[list[PerformanceTracker]], sim : Optional[Simulation]) -> list[pd.DataFrame]:
+    def evaluate_metrics(self, config: list[list[list[PerformanceTracker|JointTracker]]], sim : Optional[Simulation], save : bool = True) -> list[pd.DataFrame]:
         """
         Evaluate metrics for multiple configurations and optionally update DataFrame indices using simulation parameters.
         This method takes a list of configurations, where each configuration is a list of PerformanceTracker objects.
@@ -89,27 +89,29 @@ class Statistics:
             list[pd.DataFrame]: A list of DataFrames, each containing the concatenated metrics for corresponding observations
                     across all configurations.
         """
-        config_stats = [] # it will store statics for each configuration
-        for obs in config:
-            config_stats.append(self.evaluate_on_observation(obs))
+        for track_pos in range(len(config[0][0])):
+            config_stats = [] # it will store statics for each configuration
+            for obs in config:
+                config_stats.append(self.evaluate_on_observation(obs, track_pos=track_pos))
 
-        # Concatenate all DataFrames in the list into a single DataFrame
-        combined_df = []
-        for metrics in range(len(config_stats[0])):
-            concat_metrics = pd.DataFrame()
-            
-            for set_of_obs in range(len(config_stats)):
-                concat_metrics = pd.concat([concat_metrics, config_stats[set_of_obs][metrics]], ignore_index=True)
-            
-            if sim is not None:
-                idx = [f"config_{str(i)}" for i in range(0, sim.configuration, sim.configuration_step)]
-                concat_metrics.index = idx
+            # Concatenate all DataFrames in the list into a single DataFrame
+            combined_df = []
+            for metrics in range(len(config_stats[0])):
+                concat_metrics = pd.DataFrame()
+                
+                for set_of_obs in range(len(config_stats)):
+                    concat_metrics = pd.concat([concat_metrics, config_stats[set_of_obs][metrics]], ignore_index=True)
+                
+                if sim is not None:
+                    idx = [f"config_{str(i)}" for i in range(0, sim.configuration, sim.configuration_step)]
+                    concat_metrics.index = idx
 
-            combined_df.append(concat_metrics)
+                combined_df.append(concat_metrics)
 
-        return combined_df
+            if(save):
+                self.save_stats(combined_df)
 
-    def save_stats(self, combined_df : list[pd.DataFrame], index=False):
+    def save_stats(self, combined_df : list[pd.DataFrame], index=True):
         for i in combined_df:
             i.to_csv(f"{self.name}_{i.attrs['name']}.csv", index=index)  # Set index=False to avoid saving the index column
 
