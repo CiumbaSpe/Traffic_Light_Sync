@@ -5,7 +5,7 @@ from tracker import PerformanceTracker, JointTracker
 from tls import TrafficLightSystem
 
 class Simulation: 
-    def __init__(self, junction : str = None):
+    def __init__(self, junction : list[str] = None):
         self.warm_up : int = setting.WARM_UP                          # warm-up period
         self.runs : int = setting.RUNS                                # number of runs
         self.configuration : int = setting.CONFIGURATION              # number of configurations
@@ -22,7 +22,8 @@ class Simulation:
 
         trackers = [PerformanceTracker()]
         if(self.junction is not None):
-            trackers.append(JointTracker(self.junction))
+            for jun_id in self.junction:
+                trackers.append(JointTracker(jun_id))
 
         TrafficLightSystem(traci.trafficlight.getIDList(), config=configuration)
 

@@ -2,7 +2,7 @@ from simulator import Simulation
 from stats import Statistics
 
 def test_simulator():
-    sim = Simulation(junction="J3")
+    sim = Simulation(junction=["J3", "J1", "J2", "J4"])
     # sim.simulation_run(configuration=15, gui=True)
 
     sim.runs = 2
@@ -18,7 +18,7 @@ def test_simulator():
     # obs.append(sim.specific_config(configuration=20))
 
     stats = Statistics()
-    stats.name = "results/prova/_"
+    stats.name = "results/prova/"
     stats.evaluate_metrics(conf, sim)
     # stats.save_stats(df, index=True)
 

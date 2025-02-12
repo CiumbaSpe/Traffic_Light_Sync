@@ -12,5 +12,5 @@ CONFIGURATION_STEP = 1
 RUNS = 10
 STEP = 50000
 WARM_UP = 10000
-NAME = f"results/results_t30/06/{datetime.datetime.now().strftime('%Y%m%d_%H%M')}"
+NAME = f"results/results_t15/03/"
 SEMAPHORES = 4
