@@ -19,11 +19,12 @@ class Simulation:
 
         sumoCmd = [sumoBinary, "-c", "lightSync.sumocfg", "--random"]
         traci.start(sumoCmd)
-
-        trackers = [PerformanceTracker()]
+        
+        subtracker = []
         if(self.junction is not None):
             for jun_id in self.junction:
-                trackers.append(JointTracker(jun_id))
+                subtracker.append(JointTracker(jun_id))
+        net_tracker = PerformanceTracker(subtracker=subtracker)
 
         TrafficLightSystem(traci.trafficlight.getIDList(), config=configuration)
 
@@ -32,11 +33,15 @@ class Simulation:
         while traci.simulation.getMinExpectedNumber() > 0:
             traci.simulationStep()
             if(step > self.warm_up):
-                [tracker.update() for tracker in trackers]
+                net_tracker.update()
             step += 1
 
-        [tracker.simulation_end() for tracker in trackers]
+        net_tracker.simulation_end()
         traci.close(False) # close the connection to SUMO
+
+        trackers = [net_tracker]
+        for subtracker in net_tracker.subtracker:
+            trackers.append(subtracker)
 
         return trackers
 
