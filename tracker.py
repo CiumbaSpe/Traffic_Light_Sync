@@ -75,7 +75,7 @@ class PerformanceTracker:
         self.metrics_for_stats['completed'] = self.completed
         if(self.subtracker is not None):
             for subtracker in self.subtracker:
-                subtracker.simulation_end()
+                subtracker.simulation_end(self.completed)
 
 class JointTracker(PerformanceTracker):
     def __init__(self, junction: str):
@@ -108,7 +108,12 @@ class JointTracker(PerformanceTracker):
                 lifetime = traci.simulation.getTime() - depart_time
                 self.metrics_for_stats['completed_lifetimes'].append(lifetime)
        
+    def simulation_end(self, Network_completed):
+        super().simulation_end()
+        self.metrics_for_stats['visit_count'] = self.completed/Network_completed
+        self.metrics_for_stats['service_demand'] = self.metrics_for_stats['visit_count'] * self.metrics_for_stats['average_time_service']
 
+        
 if __name__ == "__main__":
     track = PerformanceTracker()
     # Cycle through all keys and values in self.metrics_for_stats
