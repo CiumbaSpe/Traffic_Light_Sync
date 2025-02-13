@@ -10,7 +10,9 @@ class Simulation:
         self.runs : int = setting.RUNS                                # number of runs
         self.configuration : int = setting.CONFIGURATION              # number of configurations
         self.configuration_step : int = setting.CONFIGURATION_STEP    # how much configuration iterates
+        self.simulation_steps : int = setting.STEP                    # simulation steps
         self.junction = junction
+        
 
     def simulation_run(self, configuration: int = 0, gui=False):
         """ single simulation run """
@@ -30,7 +32,7 @@ class Simulation:
 
         step = traci.simulation.getTime()
 
-        while traci.simulation.getMinExpectedNumber() > 0:
+        while traci.simulation.getMinExpectedNumber() > 0 and step < self.simulation_steps:
             traci.simulationStep()
             if(step > self.warm_up):
                 net_tracker.update()

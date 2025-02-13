@@ -33,11 +33,13 @@ class PerformanceTracker:
                 for subtracker in self.subtracker:
                     subtracker.T = self.T
                     subtracker.incoming_vehicles(vehicle_id)
-                    if subtracker.request_monitor:
-                        subtracker.request_monitor = False
-                        subtracker.rq_time += 1
                     subtracker.outgoing_vehicles(vehicle_id)
-        
+        if(self.subtracker is not None):
+            for subtracker in self.subtracker:
+                if subtracker.request_monitor:
+                    subtracker.request_monitor = False
+                    subtracker.rq_time += 1
+
         self.outgoing_vehicles()
 
         if(there_is_request):
@@ -99,7 +101,7 @@ class JointTracker(PerformanceTracker):
     def outgoing_vehicles(self, vehicle_id):
         current_edge = traci.vehicle.getRoadID(vehicle_id)
         if current_edge in self.outgoing_routes:
-                # Calculate the lifetime and store it
+            # Calculate the lifetime and store it
             depart_time = self.vehicle_lifetimes.pop(vehicle_id, None)
             if depart_time is not None:
                 self.completed += 1
