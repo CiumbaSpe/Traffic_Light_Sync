@@ -5,14 +5,12 @@ from tracker import PerformanceTracker, JointTracker
 from tls import TrafficLightSystem
 
 class Simulation: 
-    def __init__(self, junction : list[str] = None):
+    def __init__(self):
         self.warm_up : int = setting.WARM_UP                          # warm-up period
         self.runs : int = setting.RUNS                                # number of runs
         self.configuration : int = setting.CONFIGURATION              # number of configurations
         self.configuration_step : int = setting.CONFIGURATION_STEP    # how much configuration iterates
-        self.simulation_steps : int = setting.STEP                    # simulation steps
-        self.junction = junction
-        
+        self.simulation_steps : int = setting.STEP                    # simulation steps        
 
     def simulation_run(self, configuration: int = 0, gui=False):
         """ single simulation run """
@@ -22,11 +20,7 @@ class Simulation:
         sumoCmd = [sumoBinary, "-c", "lightSync.sumocfg", "--random"]
         traci.start(sumoCmd)
         
-        subtracker = []
-        if(self.junction is not None):
-            for jun_id in self.junction:
-                subtracker.append(JointTracker(jun_id))
-        net_tracker = PerformanceTracker(subtracker=subtracker)
+        net_tracker = PerformanceTracker()
 
         TrafficLightSystem(traci.trafficlight.getIDList(), config=configuration)
 
