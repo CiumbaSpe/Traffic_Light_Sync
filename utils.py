@@ -29,7 +29,7 @@ def modify_rou_flow_rate(file_path, value):
     tree.write(file_path)
 
 
-def plot_simulation_graph(step, warm_up, completed_lifetimes):
+def plot_simulation_graph(step : int, warm_up : int, completed_lifetimes : list[int], name : str = None):
 
     # Generate the x and y values for the plot
     x_values = list(range(step-warm_up))
@@ -52,8 +52,13 @@ def plot_simulation_graph(step, warm_up, completed_lifetimes):
     plt.ylabel('Average Lifetime (seconds)')
     plt.title('Average Vehicle Lifetime Over Simulation Steps')
 
+    if(name is not None):
+        plt.savefig(name)  # Save with high resolution
+
     # Show the plot
     plt.show()
+
+
 
 if __name__ == "__main__":
     # Call the function with the XML file path
