@@ -17,7 +17,10 @@ class PerformanceTracker:
         }
         self.T = 0
 
-        self.subtracker = [JointTracker(DIRECTIONS[0]), JointTracker(DIRECTIONS[1])]
+        self.subtracker = [JointTracker(DIRECTIONS[0]), JointTracker(DIRECTIONS[1]), FirstJoint()]
+        for sub in self.subtracker:
+            sub.get_roads_from_junction()
+        
         self.name = "Network"
 
     def update(self):
@@ -29,9 +32,11 @@ class PerformanceTracker:
                 subtracker.outgoing_vehicles(vehicle_id)
 
         for subtracker in self.subtracker:
-            if subtracker.request_monitor:
-                subtracker.request_monitor = False
+            if(len(subtracker.vehicle_lifetimes) > 0):
                 subtracker.rq_time += 1
+            # if subtracker.request_monitor:
+            #     subtracker.request_monitor = False
+            #     subtracker.rq_time += 1
 
     def simulation_end(self):
         for subtracker in self.subtracker:
@@ -62,16 +67,18 @@ class JointTracker():
         self.outgoing_routes = []
         self.incoming_junctions = []
 
+        self.direction = direction
+        self.name = f"Network_{direction}"
+        self.request_monitor = False
+
+    def get_roads_from_junction(self):
         for junction in NETWORK_JUNCTION:
-            self.outgoing_routes.append([e for e in traci.junction.getOutgoingEdges(junction) if not e.startswith(":") and e.endswith(direction)])
-            self.incoming_routes.append([e for e in traci.junction.getIncomingEdges(junction) if not e.startswith(":") and e.endswith(direction)])
-            self.incoming_junctions.append([e for e in traci.junction.getIncomingEdges(junction) if e.startswith(":") and e.endswith(direction)])
+            self.outgoing_routes.append([e for e in traci.junction.getOutgoingEdges(junction) if not e.startswith(":") and e.endswith(self.direction)])
+            self.incoming_routes.append([e for e in traci.junction.getIncomingEdges(junction) if not e.startswith(":") and e.endswith(self.direction)])
+            self.incoming_junctions.append([e for e in traci.junction.getIncomingEdges(junction) if e.startswith(":") and e.endswith(self.direction)])
 
         self.outgoing_routes = list(itertools.chain.from_iterable(self.outgoing_routes))
         self.incoming_routes = list(itertools.chain.from_iterable(self.incoming_routes))
-
-        self.name = f"Network_{direction}"
-        self.request_monitor = False
 
 
     def incoming_vehicles(self, vehicle_id):
@@ -92,8 +99,6 @@ class JointTracker():
         if vehicle_speed < 0.1:
             self.metrics_for_stats['stop_time'] += 1
 
-
-
     def outgoing_vehicles(self, vehicle_id):
         current_edge = traci.vehicle.getRoadID(vehicle_id)
         if current_edge in self.outgoing_routes:
@@ -113,6 +118,15 @@ class JointTracker():
         # self.metrics_for_stats['visit_count'] = self.completed/Network_completed
         # self.metrics_for_stats['service_demand'] = self.metrics_for_stats['visit_count'] * self.metrics_for_stats['average_time_service']
 
+
+class FirstJoint(JointTracker):
+    def __init__(self):
+        super().__init__("tang")
+        self.name = f"first_servant"
+
+    def get_roads_from_junction(self):
+        self.outgoing_routes = ["E2"]
+        self.incoming_routes = ["E0.66_tang"]
         
 if __name__ == "__main__":
     track = PerformanceTracker()

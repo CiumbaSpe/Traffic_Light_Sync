@@ -19,15 +19,16 @@ def test_simulator():
 
     # obs.append(sim.specific_config(configuration=20))
 
-    # stats = Statistics()
-    # stats.name = "results/prova/06/"
-    # stats.evaluate_metrics(conf, sim)
+    stats = Statistics()
+    stats.name = "results/prova/04/"
+    stats.evaluate_metrics(conf, sim)
 
     # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][0].metrics_for_stats['completed_lifetimes'])
-    plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][1].metrics_for_stats['completed_lifetimes'])
-    plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][1][1].metrics_for_stats['completed_lifetimes'], name="image_1.png")
-    plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][2].metrics_for_stats['completed_lifetimes'], name="image_2.png")
-    plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][1][2].metrics_for_stats['completed_lifetimes'], name="image_3.png")
+    # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][1].metrics_for_stats['completed_lifetimes'])
+    # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][1][1].metrics_for_stats['completed_lifetimes'], name="image_1.png")
+    # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][2].metrics_for_stats['completed_lifetimes'], name="image_2.png")
+    # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][1][2].metrics_for_stats['completed_lifetimes'], name="image_3.png")
+
 if __name__ == '__main__':
     test_simulator()
     
