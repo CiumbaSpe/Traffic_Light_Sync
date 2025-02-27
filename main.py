@@ -11,7 +11,10 @@ def main():
     sim = Simulation()
     stats = Statistics()    
 
-    config = sim.multiple_runs()
+    # config = sim.multiple_runs()
+    config = sim.multiple_fluss(setting.FLUSSES)
+    sim.configuration = len(config)
+
 
     stats.evaluate_metrics(config, sim)
 

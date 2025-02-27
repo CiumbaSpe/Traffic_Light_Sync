@@ -17,7 +17,8 @@ class PerformanceTracker:
         }
         self.T = 0
 
-        self.subtracker = [JointTracker(DIRECTIONS[0]), JointTracker(DIRECTIONS[1]), FirstJoint()]
+        self.subtracker = [JointTracker(DIRECTIONS[0]), FirstJoint()]
+        # self.subtracker = [FirstJoint()]
         for sub in self.subtracker:
             sub.get_roads_from_junction()
         

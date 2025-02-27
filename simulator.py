@@ -3,6 +3,7 @@ import os
 import setting
 from tracker import PerformanceTracker, JointTracker
 from tls import TrafficLightSystem
+from utils import modify_rou_flow_rate
 
 class Simulation: 
     def __init__(self):
@@ -40,6 +41,16 @@ class Simulation:
             trackers.append(subtracker)
 
         return trackers
+
+    def multiple_fluss(self, fluss : list[float]):
+        """ Run the simulation with multiple flow rates """
+        config = [] # it will store m flows configuration
+        for f in fluss:
+            print(f"====== Running fluss {f} ======")
+            modify_rou_flow_rate(setting.ROU_PATH, f)
+            config.append(self.specific_config(15))
+        return config
+
 
     def multiple_runs(self): # systematically try all combinations of parameters
         """ Run the simulation with all possible combinations of parameters """
