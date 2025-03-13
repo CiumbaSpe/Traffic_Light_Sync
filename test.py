@@ -7,7 +7,7 @@ def test_simulator():
     sim = Simulation()
     # sim.simulation_run(configuration=15, gui=True)
 
-    sim.runs = 3
+    sim.runs = 5
     sim.configuration_step = 1
     conf = []
     # conf.append(sim.specific_config(configuration=0))
@@ -20,7 +20,7 @@ def test_simulator():
     # obs.append(sim.specific_config(configuration=20))
 
     stats = Statistics()
-    stats.name = "results/prova/03dai/"
+    stats.name = "results/prova/prova_fluss/"
     stats.evaluate_metrics(conf, sim)
 
     # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][0].metrics_for_stats['completed_lifetimes'])

@@ -67,7 +67,10 @@ def print_csv_files():
     #              'results/t15/04/_Network_tang_completed_lifetimes.csv', 
     #              'results/t15/05/_Network_tang_completed_lifetimes.csv']
     # labels = ['L0', 'L1', 'L2']
-    csv_files = ['results/t15/flusses/_Network_tang_completed_lifetimes.csv']
+    # csv_files = ['results/t15/03/_Network_tang_completed_lifetimes.csv']
+    # csv_files = ['results/t15/flusses/_Network_tang_completed_lifetimes.csv']
+    # csv_files = ['results/t15/FinalFlus/from03to05/_Network_tang_completed_lifetimes.csv']
+    csv_files = ['results/t15/FinalFlus/from03to05/_Network_tang_throughput.csv']
     labels = ['L0']
 
     plt.figure(figsize=(10, 6))
@@ -76,17 +79,22 @@ def print_csv_files():
         # Read the CSV; assuming the first column (config_x) is the index
         df = pd.read_csv(file, index_col=0)
         
-        # Extract x (configuration) and y (lifetime mean)
+        # Extract x (configuration), y (lifetime mean), and confidence intervals
         x = df.index  # e.g., "config_0", "config_1", ...
         y = df['mean']
+        lower = df['ci_lower']
+        upper = df['ci_upper']
             
         # Plot the line with markers for each CSV file
-        plt.plot(x, y, marker='o')
+        line = plt.plot(x, y, marker='o', label=label)
+        
+        # Add confidence interval as a shaded area
+        plt.fill_between(x, lower, upper, alpha=0.2, color=line[0].get_color())
 
     # Add labels, title, legend, and grid
     plt.xlabel('L')
     plt.ylabel('Lifetime Mean')
-    plt.title('Lifetime Mean')
+    plt.title('Lifetime Mean with Confidence Intervals')
     # plt.legend()
     plt.xticks(rotation=55, ticks=x)  # Rotate x-axis labels if needed
     plt.grid(True)
@@ -97,5 +105,6 @@ def print_csv_files():
 
 if __name__ == "__main__":
     # Call the function with the XML file path
-    # modify_rou_flow_rate('prova.xml', 0.1)  # Change 'input.xml' to the path of your XML file
-    print_csv_files()  # Change to the list of CSV files you want to plot
+    modify_rou_flow_rate('lightSync.rou.xml', 0.55)  # Change 'input.xml' to the path of your XML file
+    # print_csv_files()  # Change to the list of CSV files you want to plot
+
