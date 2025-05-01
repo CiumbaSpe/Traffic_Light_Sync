@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 import math
 import pandas as pd
 
-def setting_to_stdout():
+def display_setting():
     print(f"Number of semaphores {setting.SEMAPHORES}")
     print(f"Total TLS Cycle time {setting.TLS_TOTAL_TIME}")
     print(f"Number of configurations: {setting.CONFIGURATION} different offsets")

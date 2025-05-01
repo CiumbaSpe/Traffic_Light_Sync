@@ -31,18 +31,23 @@ class Statistics:
         Evaluate statistics for each metric (attribute) in the observation.
 
         Arguments:
-            obs: A list of tracker objects with attributes to be analyzed.
+            obs: A list of tracker objects with attributes to be analyzed. e.g. [lifetime, stop_time, etc.]
+            track_pos: The position of the tracker in the list of trackers.
 
         Returns:
             A list of DataFrames, each containing statistics for one metric.
         """
 
         data_frame_for_obs = []
-        # Get the list of keys from the first object
+
+        # For each attribute in the first tracker of the first observation (assuming all other observation will have the same tracker type)
+        # So for each possible attribute  
         for key, _ in obs[0][track_pos].metrics_for_stats.items():
 
-            values = []
-            # Aggregate values from all objects for the given key
+            # Values stores all the values relative to a specific key and a specific tracker from all the observation and it will be used to evaluate statistics
+            values = [] 
+
+            # If an attribute is an array (lifetime) it will append the mean of the array to the values list else it will append the value itself
             for i in range(len(obs)):
                 value = obs[i][track_pos].metrics_for_stats[key]
                 current_type = self.metrics_type(value)
@@ -51,6 +56,7 @@ class Statistics:
                 elif current_type == "scalar":
                     values.append(value)
 
+            # Evaluating sample mean and sample variance
             sample_mean = np.mean(values)
             sample_variance = np.var(values, ddof=1)
             var_mean = sample_variance / len(values)
@@ -68,6 +74,7 @@ class Statistics:
                 'ci_lower': [sample_mean - margin_error],
                 'ci_upper': [sample_mean + margin_error]
             })
+            
             df.attrs['name'] = f"{obs[0][track_pos].name}_{key}" 
             data_frame_for_obs.append(df)
 
