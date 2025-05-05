@@ -2,14 +2,12 @@ import pandas as pd
 import numpy as np
 import scipy.stats as st
 import setting
-from simulator import Simulation
 from tracker import PerformanceTracker, JointTracker
-from typing import Optional
+import os
 
 class Statistics: 
-    def __init__(self):
-        self.name = setting.NAME
-        pass
+    def __init__(self, name: str = "stat"):
+        self.name = name
 
     def metrics_type(self, value: any) -> str:
         """
@@ -72,7 +70,8 @@ class Statistics:
                 'var': [sample_variance],
                 'var_mean': [var_mean],
                 'ci_lower': [sample_mean - margin_error],
-                'ci_upper': [sample_mean + margin_error]
+                'ci_upper': [sample_mean + margin_error],
+                'margin_error': [margin_error],
             })
             
             df.attrs['name'] = f"{obs[0][track_pos].name}_{key}" 
@@ -80,7 +79,7 @@ class Statistics:
 
         return data_frame_for_obs
 
-    def evaluate_metrics(self, config: list[list[list[PerformanceTracker|JointTracker]]], sim : Optional[Simulation], save : bool = True) -> list[pd.DataFrame]:
+    def evaluate_metrics(self, config: list[list[list[PerformanceTracker|JointTracker]]]) -> list[pd.DataFrame]:
         """
         Evaluate metrics for multiple configurations and optionally update DataFrame indices using simulation parameters.
         This method takes a list of configurations, where each configuration is a list of PerformanceTracker objects.
@@ -109,28 +108,22 @@ class Statistics:
                 for set_of_obs in range(len(config_stats)):
                     concat_metrics = pd.concat([concat_metrics, config_stats[set_of_obs][metrics]], ignore_index=True)
                 
-                if sim is not None:
-                    idx = [f"config_{str(i)}" for i in range(0, sim.configuration, sim.configuration_step)]
-                    concat_metrics.index = idx
+                # if sim is not None:
+                #     idx = [f"config_{str(i)}" for i in range(0, sim.configuration, sim.configuration_step)]
+                #     concat_metrics.index = idx
+                idx = [f"config_{str(i)}" for i in range(0, len(config))]
+                concat_metrics.index = idx
 
                 combined_df.append(concat_metrics)
 
-            if(save):
-                self.save_stats(combined_df)
+            self.save_stats(combined_df)
 
     def save_stats(self, combined_df : list[pd.DataFrame], index=True):
+
+        os.makedirs(self.name, exist_ok=True)
+
         for i in combined_df:
             i.to_csv(f"{self.name}_{i.attrs['name']}.csv", index=index)  # Set index=False to avoid saving the index column
 
-
-if __name__ == "__main__":
-    stats = Statistics()
-    # class SampleSim:
-    #     def __init__(self, configuration, permutations):
-    #         self.configuration = configuration
-    #         self.permutations = permutations
-    #         self.configuration_step = 1
-    # sim = SampleSim(configuration=2, permutations=1)
-    # stats.save_stats(stats.evaluate_metrics([[[1, 2],[1, 2]], [[4, 5],[5, 6]]], sim), index=True)
 
 

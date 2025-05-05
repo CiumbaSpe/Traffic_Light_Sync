@@ -4,7 +4,7 @@ from utils import plot_simulation_graph
 import setting
 
 def test_simulator():
-    sim = Simulation()
+    sim = Simulation(setting.STEP, setting.WARM_UP, 1)
     # sim.simulation_run(configuration=15, gui=True)
 
     sim.runs = 5

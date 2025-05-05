@@ -10,22 +10,24 @@ def main():
 
     # Create an instance of the Simulation class (it will handle the simulation logic)
     # And the Statistics class  (at the end of the simulation it will handle statistics with the recorded data)
-    sim = Simulation()
-    stats = Statistics()    
+    sim = Simulation(setting.STEP, setting.WARM_UP, setting.RUNS)
+    stats = Statistics(setting.NAME)    
 
     # For each flow rate in the list, modify the XML file and run the simulation
     for i in setting.TANGENTIAL_FLOW:
         modify_rou_flow_rate(setting.ROU_PATH, i)
     
-        config = sim.multiple_runs()
-        sim.configuration = len(config)
+        """ Run the simulation with all possible combinations of parameters """
+        config = []
+        for offset in range(0, setting.CONFIGURATION, setting.CONFIGURATION_STEP):
+            print(f"====== Running configuration {offset//setting.CONFIGURATION_STEP} ======")
+            config.append(sim.specific_config(offset))
 
-        stats.evaluate_metrics(config, sim)
+        name = f"results/{setting.NAME}/{str(i).replace('.', '')}/"
+        stats.name = name    
 
+        stats.evaluate_metrics(config)
 
-    # TODO: refactor this
-    # Plot the simulation graph
-    # plot_simulation_graph(sim_step, 1000, completed_lifetimes)
 
 if __name__ == "__main__":
     main()
