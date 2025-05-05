@@ -4,11 +4,9 @@ from utils import plot_simulation_graph
 import setting
 
 def test_simulator():
-    sim = Simulation(setting.STEP, setting.WARM_UP, 1)
+    sim = Simulation(setting.STEP, setting.WARM_UP, 2)
     # sim.simulation_run(configuration=15, gui=True)
 
-    sim.runs = 5
-    sim.configuration_step = 1
     conf = []
     # conf.append(sim.specific_config(configuration=0))
     # conf.append(sim.specific_config(configuration=7))
@@ -20,8 +18,8 @@ def test_simulator():
     # obs.append(sim.specific_config(configuration=20))
 
     stats = Statistics()
-    stats.name = "results/prova/prova_fluss/"
-    stats.evaluate_metrics(conf, sim)
+    stats.name = "results/prova/subscription1/"
+    stats.evaluate_metrics(conf)
 
     # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][0].metrics_for_stats['completed_lifetimes'])
     # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][1].metrics_for_stats['completed_lifetimes'])
