@@ -21,12 +21,6 @@ class PerformanceTracker:
         # self.subtracker = [FirstJoint()]
         for sub in self.subtracker:
             sub.get_roads_from_junction()
-            
-            # Convert route lists to sets for faster lookups
-            sub.incoming_routes = set(sub.incoming_routes)
-            sub.outgoing_routes = set(sub.outgoing_routes)
-            sub.incoming_junctions = list(itertools.chain.from_iterable(sub.incoming_junctions))
-            sub.incoming_junctions = set(sub.incoming_junctions)
         
         self.name = "Network"
         self.subscribed_vehicles = set()  # Keep track of subscribed vehicles
@@ -90,9 +84,9 @@ class JointTracker():
         self.completed = 0  # number of vehicles that completed their trip
         self.rq_time = 0    # time in which there is at least one request in the system
 
-        self.incoming_routes = []
-        self.outgoing_routes = []
-        self.incoming_junctions = []
+        self.incoming_routes = set()
+        self.outgoing_routes = set()
+        self.incoming_junctions = set()
 
         self.direction = direction
         self.name = f"Network_{direction}"
@@ -100,12 +94,21 @@ class JointTracker():
 
     def get_roads_from_junction(self):
         for junction in NETWORK_JUNCTION:
-            self.outgoing_routes.append([e for e in traci.junction.getOutgoingEdges(junction) if not e.startswith(":") and e.endswith(self.direction)])
-            self.incoming_routes.append([e for e in traci.junction.getIncomingEdges(junction) if not e.startswith(":") and e.endswith(self.direction)])
-            self.incoming_junctions.append([e for e in traci.junction.getIncomingEdges(junction) if e.startswith(":") and e.endswith(self.direction)])
 
-        self.outgoing_routes = list(itertools.chain.from_iterable(self.outgoing_routes))
-        self.incoming_routes = list(itertools.chain.from_iterable(self.incoming_routes))
+            self.outgoing_routes.update(
+                e for e in traci.junction.getOutgoingEdges(junction) 
+                if not e.startswith(":") and e.endswith(self.direction)
+            )
+            
+            self.incoming_routes.update(
+                e for e in traci.junction.getIncomingEdges(junction) 
+                if not e.startswith(":") and e.endswith(self.direction)
+            )
+            
+            self.incoming_junctions.update(
+                e for e in traci.junction.getIncomingEdges(junction) 
+                if e.startswith(":") and e.endswith(self.direction)
+            )
 
     def process_vehicle(self, vehicle_id, current_edge, vehicle_speed):
         """Process vehicle data from subscription in a single pass"""
@@ -116,7 +119,7 @@ class JointTracker():
         if is_relevant_edge and vehicle_id not in self.vehicle_lifetimes:
             self.request_monitor = True
             self.arrivals += 1
-            self.vehicle_lifetimes[vehicle_id] = traci.simulation.getTime()
+            self.vehicle_lifetimes[vehicle_id] = self.T
 
         # Track stopped vehicles
         if vehicle_speed < 0.1:
@@ -127,18 +130,9 @@ class JointTracker():
             depart_time = self.vehicle_lifetimes.pop(vehicle_id, None)
             if depart_time is not None:
                 self.completed += 1
-                lifetime = traci.simulation.getTime() - depart_time
+                lifetime = self.T - depart_time
                 self.metrics_for_stats['completed_lifetimes'].append(lifetime)
 
-    # Legacy methods for backward compatibility
-    def incoming_vehicles(self, vehicle_id):
-        # This method is kept for backward compatibility but should not be used anymore
-        pass
-        
-    def outgoing_vehicles(self, vehicle_id):
-        # This method is kept for backward compatibility but should not be used anymore
-        pass
-       
     def simulation_end(self):
         # Adding safety checks to avoid division by zero
         self.metrics_for_stats['arrival_rate'] = self.arrivals / self.T if self.T > 0 else 0
@@ -154,5 +148,5 @@ class FirstJoint(JointTracker):
         self.name = f"first_servant"
 
     def get_roads_from_junction(self):
-        self.outgoing_routes = ["E2"]
-        self.incoming_routes = ["E0.66_tang"]
+        self.outgoing_routes = {"E2"}
+        self.incoming_routes = {"E0.66_tang"}

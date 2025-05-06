@@ -3,6 +3,7 @@ import setting
 import xml.etree.ElementTree as ET
 import math
 import pandas as pd
+import setting
 
 def display_setting():
     print(f"Number of semaphores {setting.SEMAPHORES}")
@@ -16,12 +17,14 @@ def display_setting():
     print(f"Results will be saved in {setting.NAME}\n")
 
 # Function to modify the XML based on id values
-def modify_rou_flow_rate(file_path, value):
+def modify_rou_flow_rate(file_path, value, steps):
     # Parse the XML file
     tree = ET.parse(file_path)
     root = tree.getroot()
 
     for flow in root.findall('flow'):
+        flow.set('end', str(steps))  # Set the end attribute to the number of steps
+
         if flow.get('id') in ['tan_ltr', 'tan_rtl']:
             flow.set('period', f'exp({str(value)})')  # Change this value as needed
         else:
@@ -40,14 +43,12 @@ def plot_simulation_graph(step : int, warm_up : int, completed_lifetimes : list[
     # Calculate the average lifetime at each step
     for i in range(step-warm_up):
         current_lifetimes = [lifetime for j, lifetime in enumerate(completed_lifetimes) if j <= i]
-        if current_lifetimes:
-            average_lifetime = sum(current_lifetimes) / len(current_lifetimes)
-            y_values.append(average_lifetime)
-        else:
-            y_values.append(0)
+        average_lifetime = sum(current_lifetimes) / len(current_lifetimes)
+        y_values.append(average_lifetime)
 
     # Create the plot
     plt.plot(x_values, y_values)
+
 
     # Add labels and title
     plt.xlabel('Simulation Step')
@@ -105,6 +106,6 @@ def print_csv_files():
 
 if __name__ == "__main__":
     # Call the function with the XML file path
-    modify_rou_flow_rate('lightSync.rou.xml', 0.55)  # Change 'input.xml' to the path of your XML file
+    modify_rou_flow_rate('lightSync.rou.xml', 0.3, setting.STEP)  # Change 'input.xml' to the path of your XML file
     # print_csv_files()  # Change to the list of CSV files you want to plot
 

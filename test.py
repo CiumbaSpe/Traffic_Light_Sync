@@ -1,10 +1,13 @@
 from simulator import Simulation
 from stats import Statistics
-from utils import plot_simulation_graph
+from utils import plot_simulation_graph, modify_rou_flow_rate
 import setting
 
 def test_simulator():
-    sim = Simulation(setting.STEP, setting.WARM_UP, 2)
+    
+    modify_rou_flow_rate('lightSync.rou.xml', 0.3, setting.STEP)  # Change 'input.xml' to the path of your XML file
+    sim = Simulation(setting.STEP, 0, 1)
+    # sim = Simulation(setting.STEP, 0, 1)
     # sim.simulation_run(configuration=15, gui=True)
 
     conf = []
@@ -19,9 +22,15 @@ def test_simulator():
 
     stats = Statistics()
     stats.name = "results/prova/subscription1/"
+    
+    print("waiting for the stats")
+
     stats.evaluate_metrics(conf)
 
-    # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][0].metrics_for_stats['completed_lifetimes'])
+    print("waiting for the graph")
+
+    plot_simulation_graph(setting.STEP, 0, conf[0][0][1].metrics_for_stats['completed_lifetimes'])
+
     # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][1].metrics_for_stats['completed_lifetimes'])
     # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][1][1].metrics_for_stats['completed_lifetimes'], name="image_1.png")
     # plot_simulation_graph(setting.STEP, setting.WARM_UP, conf[0][0][2].metrics_for_stats['completed_lifetimes'], name="image_2.png")
