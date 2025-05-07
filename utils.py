@@ -34,21 +34,24 @@ def modify_rou_flow_rate(file_path, value, steps):
     tree.write(file_path)
 
 
-def plot_simulation_graph(step : int, warm_up : int, completed_lifetimes : list[int], name : str = None):
+def applying_moving_average(x, window):
+    y_series = pd.Series(x)
+    return y_series.rolling(window=window, min_periods=1).mean().to_numpy()
+    # return y_series.ewm(span=window).mean()
 
-    # Generate the x and y values for the plot
-    x_values = list(range(step-warm_up))
-    y_values = []
 
-    # Calculate the average lifetime at each step
-    for i in range(step-warm_up):
-        current_lifetimes = [lifetime for j, lifetime in enumerate(completed_lifetimes) if j <= i]
-        average_lifetime = sum(current_lifetimes) / len(current_lifetimes)
-        y_values.append(average_lifetime)
+def plot_simulation_graph(completed_lifetimes : list[int], arrival_times : list[int], name: str = None):
+        
+    # Applying moving average to the completed lifetimes
+    y_values = applying_moving_average(completed_lifetimes, 5000)
 
     # Create the plot
-    plt.plot(x_values, y_values)
-
+    plt.scatter(arrival_times, y_values, 
+            marker='o',           # Point shape
+            s=3,                 # Point size
+            alpha=0.7,            # Transparency
+            color='blue',         # Point color
+    )
 
     # Add labels and title
     plt.xlabel('Simulation Step')
@@ -106,6 +109,7 @@ def print_csv_files():
 
 if __name__ == "__main__":
     # Call the function with the XML file path
-    modify_rou_flow_rate('lightSync.rou.xml', 0.3, setting.STEP)  # Change 'input.xml' to the path of your XML file
+    # modify_rou_flow_rate('lightSync.rou.xml', 0.3, setting.STEP)  # Change 'input.xml' to the path of your XML file
     # print_csv_files()  # Change to the list of CSV files you want to plot
+    plot_simulation_graph([63, 62, 65, 31], [3, 5, 6, 8])
 

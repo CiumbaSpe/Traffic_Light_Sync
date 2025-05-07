@@ -88,6 +88,8 @@ class JointTracker():
         self.outgoing_routes = set()
         self.incoming_junctions = set()
 
+        self.arrival_time = [] # store the simulation step in which a vehicle arrives
+
         self.direction = direction
         self.name = f"Network_{direction}"
         self.request_monitor = False
@@ -132,6 +134,7 @@ class JointTracker():
                 self.completed += 1
                 lifetime = self.T - depart_time
                 self.metrics_for_stats['completed_lifetimes'].append(lifetime)
+                self.arrival_time.append(self.T)
 
     def simulation_end(self):
         # Adding safety checks to avoid division by zero

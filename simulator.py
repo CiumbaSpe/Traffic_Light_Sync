@@ -4,8 +4,8 @@ from tracker import PerformanceTracker, JointTracker
 from tls import TrafficLightSystem
 
 class Simulation: 
-    def __init__(self, simulation_steps: int, warn_up: int, number_of_runs: int):
-        self.warm_up = warn_up                                  # warm-up period
+    def __init__(self, simulation_steps: int, warm_up: int, number_of_runs: int):
+        self.warm_up = warm_up                                  # warm-up period
         self.runs = number_of_runs                              # number of runs
         self.simulation_steps = simulation_steps                # simulation steps        
 
