@@ -1,6 +1,6 @@
 import traci
 import os
-from tracker import PerformanceTracker, JointTracker
+from tracker import ManageTrackers
 from tls import TrafficLightSystem
 
 class Simulation: 
@@ -17,7 +17,7 @@ class Simulation:
         sumoCmd = [sumoBinary, "-c", "lightSync.sumocfg", "--random"]
         traci.start(sumoCmd)
         
-        net_tracker = PerformanceTracker()
+        net_tracker = ManageTrackers()
 
         TrafficLightSystem(traci.trafficlight.getIDList(), config=configuration)
 
@@ -32,11 +32,7 @@ class Simulation:
         net_tracker.simulation_end()
         traci.close(False) # close the connection to SUMO
 
-        trackers = [net_tracker]
-        for subtracker in net_tracker.subtracker:
-            trackers.append(subtracker)
-
-        return trackers
+        return net_tracker.trackers
 
     def specific_config(self, configuration):
         """ Run the simulation with a specific configuration for self.runs times """

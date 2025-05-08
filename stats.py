@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as st
 import setting
-from tracker import PerformanceTracker, JointTracker
+from tracker import JointTracker
 import os
 
 class Statistics: 
@@ -24,7 +24,7 @@ class Statistics:
             return "scalar"
         return None
     
-    def evaluate_on_observation(self, obs: list[list[PerformanceTracker|JointTracker]], track_pos : int = 0) -> list[pd.DataFrame]:
+    def evaluate_on_observation(self, obs: list[list[JointTracker]], track_pos : int = 0) -> list[pd.DataFrame]:
         """
         Evaluate statistics for each metric (attribute) in the observation.
 
@@ -79,16 +79,16 @@ class Statistics:
 
         return data_frame_for_obs
 
-    def evaluate_metrics(self, config: list[list[list[PerformanceTracker|JointTracker]]]) -> list[pd.DataFrame]:
+    def evaluate_metrics(self, config: list[list[list[JointTracker]]]) -> list[pd.DataFrame]:
         """
         Evaluate metrics for multiple configurations and optionally update DataFrame indices using simulation parameters.
-        This method takes a list of configurations, where each configuration is a list of PerformanceTracker objects.
+        This method takes a list of configurations, where each configuration is a list of objects.
         It computes metrics for every observation in each configuration, then concatenates the metrics across configurations
         observation-wise. If a Simulation instance is provided, the indices of the resulting DataFrames are reset based on the
         simulation's 'configuration' and 'configuration_step' attributes, formatted as "config_<number>".
         
         Parameters:
-            config (list[list[PerformanceTracker]]): A list where each element is a list of PerformanceTracker objects.
+            config (list[list[JointTracker]]): A list where each element is a list of JointTracker objects.
             sim (Optional[Simulation], optional): A Simulation instance used to adjust DataFrame indices. Defaults to None.
         
         Returns:
@@ -123,7 +123,7 @@ class Statistics:
         os.makedirs(self.name, exist_ok=True)
 
         for i in combined_df:
-            i.to_csv(f"{self.name}_{i.attrs['name']}.csv", index=index)  # Set index=False to avoid saving the index column
+            i.to_csv(f"{self.name}{i.attrs['name']}.csv", index=index)  # Set index=False to avoid saving the index column
 
 
 

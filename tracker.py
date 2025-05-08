@@ -1,25 +1,19 @@
 import traci
-import traci._junction
-import itertools
 import traci.constants as tc
 
 NETWORK_JUNCTION = ["J1", "J2", "J3", "J4"]
 DIRECTIONS = ["tang", "tras"]
 
-class PerformanceTracker:
+class ManageTrackers:
     """
         Manages the update of trackers placed at junctions.
     """
     def __init__(self):
-        self.metrics_for_stats: dict[str, float | int | list[float]] = {
-            'stop_time': 0,
-            'completed_lifetimes': [],
-        }
         self.T = 0
 
-        self.subtracker = [JointTracker(DIRECTIONS[0]), FirstJoint()]
-        # self.subtracker = [FirstJoint()]
-        for sub in self.subtracker:
+        self.trackers = [JointTracker(DIRECTIONS[0]), FirstJoint()]
+        # self.trackers = [FirstJoint()]
+        for sub in self.trackers:
             sub.get_roads_from_junction()
         
         self.name = "Network"
@@ -45,9 +39,9 @@ class PerformanceTracker:
             current_edge = data[tc.VAR_ROAD_ID]
             vehicle_speed = data[tc.VAR_SPEED]
             
-            for subtracker in self.subtracker:
-                subtracker.T = self.T
-                subtracker.process_vehicle(vehicle_id, current_edge, vehicle_speed)
+            for tracker in self.trackers:
+                tracker.T = self.T
+                tracker.process_vehicle(vehicle_id, current_edge, vehicle_speed)
         
         # Clean up subscriptions for vehicles that left the simulation
         departed_vehicles = self.subscribed_vehicles - current_vehicles
@@ -55,44 +49,28 @@ class PerformanceTracker:
             self.subscribed_vehicles.remove(vehicle_id)
             # TraCI automatically unsubscribes departed vehicles, so no explicit unsubscribe needed
         
-        # Update request time counters
-        for subtracker in self.subtracker:
-            if len(subtracker.vehicle_lifetimes) > 0:
-                subtracker.rq_time += 1
-
     def simulation_end(self):
-        for subtracker in self.subtracker:
-            subtracker.simulation_end()
-        self.metrics_for_stats['stop_time'] = sum([subtracker.metrics_for_stats['stop_time'] for subtracker in self.subtracker])
-        self.metrics_for_stats['completed_lifetimes'] = list(itertools.chain.from_iterable([subtracker.metrics_for_stats['completed_lifetimes'] for subtracker in self.subtracker]))
-        
+        for tracker in self.trackers:
+            tracker.simulation_end()        
 
 class JointTracker():
     def __init__(self, direction: str):
-        self.vehicle_lifetimes = {}
+        self.system = {}    # keep track of vehicles id in the system
         self.metrics_for_stats: dict[str, float | int | list[float]] = {
-            'stop_time': 0,
             'completed_lifetimes': [],
-            'arrival_rate': 0.0,
-            'throughput': 0.0,
-            'utilization': 0.0,
-            'average_time_service': 0.0,
-            'completed': 0,
         }
-        self.T = 0
+        self.T = 0          # simulation step
         self.arrivals = 0   # number of vehicles that arrived in the system
         self.completed = 0  # number of vehicles that completed their trip
-        self.rq_time = 0    # time in which there is at least one request in the system
 
         self.incoming_routes = set()
         self.outgoing_routes = set()
         self.incoming_junctions = set()
 
-        self.arrival_time = [] # store the simulation step in which a vehicle arrives
+        self.completed_at_time = [] # store the simulation step in which a vehicle completed its trip
 
         self.direction = direction
         self.name = f"Network_{direction}"
-        self.request_monitor = False
 
     def get_roads_from_junction(self):
         for junction in NETWORK_JUNCTION:
@@ -115,33 +93,29 @@ class JointTracker():
     def process_vehicle(self, vehicle_id, current_edge, vehicle_speed):
         """Process vehicle data from subscription in a single pass"""
         # Handle incoming vehicles
-        is_relevant_edge = (current_edge in self.incoming_junctions or 
-                 (current_edge in self.incoming_routes and vehicle_speed < 0.1))
+        is_relevant_edge = (vehicle_id not in self.system) and (
+            (current_edge in self.incoming_junctions) or 
+            (current_edge in self.incoming_routes and vehicle_speed < 0.1)
+        )
         
-        if is_relevant_edge and vehicle_id not in self.vehicle_lifetimes:
-            self.request_monitor = True
+        if is_relevant_edge:
             self.arrivals += 1
-            self.vehicle_lifetimes[vehicle_id] = self.T
-
-        # Track stopped vehicles
-        if vehicle_speed < 0.1:
-            self.metrics_for_stats['stop_time'] += 1
+            self.system[vehicle_id] = self.T
             
         # Handle outgoing vehicles
         if current_edge in self.outgoing_routes:
-            depart_time = self.vehicle_lifetimes.pop(vehicle_id, None)
+            depart_time = self.system.pop(vehicle_id, None)
             if depart_time is not None:
                 self.completed += 1
                 lifetime = self.T - depart_time
                 self.metrics_for_stats['completed_lifetimes'].append(lifetime)
-                self.arrival_time.append(self.T)
+                self.completed_at_time.append(self.T)
+
 
     def simulation_end(self):
         # Adding safety checks to avoid division by zero
         self.metrics_for_stats['arrival_rate'] = self.arrivals / self.T if self.T > 0 else 0
         self.metrics_for_stats['throughput'] = self.completed / self.T if self.T > 0 else 0
-        self.metrics_for_stats['utilization'] = self.rq_time / self.T if self.T > 0 else 0
-        self.metrics_for_stats['average_time_service'] = self.rq_time / self.completed if self.completed > 0 else 0
         self.metrics_for_stats['completed'] = self.completed
 
 
@@ -149,6 +123,23 @@ class FirstJoint(JointTracker):
     def __init__(self):
         super().__init__("tang")
         self.name = f"first_servant"
+
+        # to manage the request time
+        self.track_step = self.T
+        self.rq_time = 0
+
+    def process_vehicle(self, vehicle_id, current_edge, vehicle_speed):
+        super().process_vehicle(vehicle_id, current_edge, vehicle_speed)
+
+        if len(self.system) > 0 and self.track_step < self.T:
+            self.rq_time += 1
+            self.track_step = self.T
+
+    def simulation_end(self):
+        super().simulation_end()
+        self.metrics_for_stats['utilization'] = self.rq_time / self.T if self.T > 0 else 0
+        self.metrics_for_stats['average_time_service'] = self.rq_time / self.completed if self.completed > 0 else 0
+
 
     def get_roads_from_junction(self):
         self.outgoing_routes = {"E2"}
