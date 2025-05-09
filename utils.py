@@ -68,7 +68,7 @@ def print_csv_files():
     # csv_files = ['results/t15/03/_Network_tang_completed_lifetimes.csv']
     # csv_files = ['results/t15/flusses/_Network_tang_completed_lifetimes.csv']
     # csv_files = ['results/t15/FinalFlus/from03to05/_Network_tang_completed_lifetimes.csv']
-    csv_files = ['results/prova/flusses/Network_tang_throughput.csv']
+    csv_files = ['results/prova/TightFluss/Network_tang_throughput.csv']
     labels = ['L0']
 
     plt.figure(figsize=(10, 6))

@@ -11,7 +11,7 @@ class ManageTrackers:
     def __init__(self):
         self.T = 0
 
-        self.trackers = [JointTracker(DIRECTIONS[1])]
+        self.trackers = [JointTracker(DIRECTIONS[0])]
         # self.trackers = [FirstJoint()]
         for sub in self.trackers:
             sub.get_roads_from_junction()
