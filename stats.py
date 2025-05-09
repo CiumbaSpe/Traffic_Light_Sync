@@ -108,9 +108,6 @@ class Statistics:
                 for set_of_obs in range(len(config_stats)):
                     concat_metrics = pd.concat([concat_metrics, config_stats[set_of_obs][metrics]], ignore_index=True)
                 
-                # if sim is not None:
-                #     idx = [f"config_{str(i)}" for i in range(0, sim.configuration, sim.configuration_step)]
-                #     concat_metrics.index = idx
                 idx = [f"config_{str(i)}" for i in range(0, len(config))]
                 concat_metrics.index = idx
 

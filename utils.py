@@ -37,8 +37,6 @@ def modify_rou_flow_rate(file_path, value, steps):
 def applying_moving_average(x, window):
     y_series = pd.Series(x)
     return y_series.rolling(window=window, min_periods=1).mean().to_numpy()
-    # return y_series.ewm(span=window).mean()
-
 
 def plot_simulation_graph(completed_lifetimes : list[int], arrival_times : list[int], name: str = None):
         
@@ -67,14 +65,10 @@ def plot_simulation_graph(completed_lifetimes : list[int], arrival_times : list[
 
 def print_csv_files():
     # List of CSV file names and corresponding labels
-    # csv_files = ['results/t15/03/_Network_tang_completed_lifetimes.csv', 
-    #              'results/t15/04/_Network_tang_completed_lifetimes.csv', 
-    #              'results/t15/05/_Network_tang_completed_lifetimes.csv']
-    # labels = ['L0', 'L1', 'L2']
     # csv_files = ['results/t15/03/_Network_tang_completed_lifetimes.csv']
     # csv_files = ['results/t15/flusses/_Network_tang_completed_lifetimes.csv']
     # csv_files = ['results/t15/FinalFlus/from03to05/_Network_tang_completed_lifetimes.csv']
-    csv_files = ['results/t15/FinalFlus/from03to05/_Network_tang_throughput.csv']
+    csv_files = ['results/prova/flusses/Network_tang_throughput.csv']
     labels = ['L0']
 
     plt.figure(figsize=(10, 6))
@@ -97,8 +91,8 @@ def print_csv_files():
 
     # Add labels, title, legend, and grid
     plt.xlabel('L')
-    plt.ylabel('Lifetime Mean')
-    plt.title('Lifetime Mean with Confidence Intervals')
+    plt.ylabel('Throughput')
+    plt.title('Throughput over different values of L')
     # plt.legend()
     plt.xticks(rotation=55, ticks=x)  # Rotate x-axis labels if needed
     plt.grid(True)
@@ -110,6 +104,7 @@ def print_csv_files():
 if __name__ == "__main__":
     # Call the function with the XML file path
     # modify_rou_flow_rate('lightSync.rou.xml', 0.3, setting.STEP)  # Change 'input.xml' to the path of your XML file
-    # print_csv_files()  # Change to the list of CSV files you want to plot
-    plot_simulation_graph([63, 62, 65, 31], [3, 5, 6, 8])
+    print_csv_files()  # Change to the list of CSV files you want to plot
+    # plot_simulation_graph([63, 62, 65, 31], [3, 5, 6, 8])
+    
 

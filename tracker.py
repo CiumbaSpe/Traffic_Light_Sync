@@ -11,7 +11,7 @@ class ManageTrackers:
     def __init__(self):
         self.T = 0
 
-        self.trackers = [JointTracker(DIRECTIONS[0]), FirstJoint()]
+        self.trackers = [JointTracker(DIRECTIONS[1])]
         # self.trackers = [FirstJoint()]
         for sub in self.trackers:
             sub.get_roads_from_junction()
@@ -116,7 +116,6 @@ class JointTracker():
         # Adding safety checks to avoid division by zero
         self.metrics_for_stats['arrival_rate'] = self.arrivals / self.T if self.T > 0 else 0
         self.metrics_for_stats['throughput'] = self.completed / self.T if self.T > 0 else 0
-        self.metrics_for_stats['completed'] = self.completed
 
 
 class FirstJoint(JointTracker):

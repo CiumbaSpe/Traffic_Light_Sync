@@ -4,20 +4,20 @@
     <vType id="normal_car1" vClass="passenger" maxSpeed="35" speedFactor="0.9" speedDev="0.1" sigma="0.5" accel="2.6" decel="4.5" />
 
     
-    <flow id="tan_ltr" type="normal_car" begin="0" end="21000" period="exp(0.3)" from="tan1_start" to="tan2_end" departSpeed="max" departLane="best" />
-    <flow id="tan_rtl" type="normal_car" begin="0" end="21000" period="exp(0.3)" from="tan2_start" to="tan1_end" departSpeed="max" departLane="best" />
+    <flow id="tan_ltr" type="normal_car" begin="0" end="21000" period="exp(0.6)" from="tan1_start" to="tan2_end" departSpeed="max" departLane="best" />
+    <flow id="tan_rtl" type="normal_car" begin="0" end="21000" period="exp(0.6)" from="tan2_start" to="tan1_end" departSpeed="max" departLane="best" />
     
     
-    <flow id="rad1_utd" type="normal_car" begin="0" end="21000" period="exp(0.1)" from="rad1_up_start" to="rad1_down_end" departSpeed="max" departLane="best" />
-    <flow id="rad1_dtu" type="normal_car" begin="0" end="21000" period="exp(0.1)" from="rad1_down_start" to="rad1_up_end" departSpeed="max" departLane="best" />
+    <flow id="rad1_utd" type="normal_car" begin="0" end="21000" period="exp(0.2)" from="rad1_up_start" to="rad1_down_end" departSpeed="max" departLane="best" />
+    <flow id="rad1_dtu" type="normal_car" begin="0" end="21000" period="exp(0.2)" from="rad1_down_start" to="rad1_up_end" departSpeed="max" departLane="best" />
     
-    <flow id="rad2_utd" type="normal_car" begin="0" end="21000" period="exp(0.1)" from="rad2_up_start" to="rad2_down_end" departSpeed="max" departLane="best" />
-    <flow id="rad2_dtu" type="normal_car" begin="0" end="21000" period="exp(0.1)" from="rad2_down_start" to="rad2_up_end" departSpeed="max" departLane="best" />
+    <flow id="rad2_utd" type="normal_car" begin="0" end="21000" period="exp(0.2)" from="rad2_up_start" to="rad2_down_end" departSpeed="max" departLane="best" />
+    <flow id="rad2_dtu" type="normal_car" begin="0" end="21000" period="exp(0.2)" from="rad2_down_start" to="rad2_up_end" departSpeed="max" departLane="best" />
 
-    <flow id="rad3_utd" type="normal_car" begin="0" end="21000" period="exp(0.1)" from="rad3_up_start" to="rad3_down_end" departSpeed="max" departLane="best" />
-    <flow id="rad3_dtu" type="normal_car" begin="0" end="21000" period="exp(0.1)" from="rad3_down_start" to="rad3_up_end" departSpeed="max" departLane="best" />
+    <flow id="rad3_utd" type="normal_car" begin="0" end="21000" period="exp(0.2)" from="rad3_up_start" to="rad3_down_end" departSpeed="max" departLane="best" />
+    <flow id="rad3_dtu" type="normal_car" begin="0" end="21000" period="exp(0.2)" from="rad3_down_start" to="rad3_up_end" departSpeed="max" departLane="best" />
     
-    <flow id="rad4_utd" type="normal_car" begin="0" end="21000" period="exp(0.1)" from="rad4_up_start" to="rad4_down_end" departSpeed="max" departLane="best" />
-    <flow id="rad4_dtu" type="normal_car" begin="0" end="21000" period="exp(0.1)" from="rad4_down_start" to="rad4_up_end" departSpeed="max" departLane="best" />
+    <flow id="rad4_utd" type="normal_car" begin="0" end="21000" period="exp(0.2)" from="rad4_up_start" to="rad4_down_end" departSpeed="max" departLane="best" />
+    <flow id="rad4_dtu" type="normal_car" begin="0" end="21000" period="exp(0.2)" from="rad4_down_start" to="rad4_up_end" departSpeed="max" departLane="best" />
     
 </routes>

@@ -15,7 +15,7 @@ def main():
 
     # For each flow rate in the list, modify the XML file and run the simulation
     for i in setting.TANGENTIAL_FLOW:
-        modify_rou_flow_rate(setting.ROU_PATH, i)
+        modify_rou_flow_rate(setting.ROU_PATH, i, setting.STEP)
     
         """ Run the simulation with all possible combinations of parameters """
         config = []

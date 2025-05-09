@@ -17,7 +17,7 @@ class Simulation:
         sumoCmd = [sumoBinary, "-c", "lightSync.sumocfg", "--random"]
         traci.start(sumoCmd)
         
-        net_tracker = ManageTrackers()
+        tracker_manager = ManageTrackers()
 
         TrafficLightSystem(traci.trafficlight.getIDList(), config=configuration)
 
@@ -26,13 +26,13 @@ class Simulation:
         while traci.simulation.getMinExpectedNumber() > 0 and step < self.simulation_steps:
             traci.simulationStep()
             if(step > self.warm_up):
-                net_tracker.update()
+                tracker_manager.update()
             step += 1
 
-        net_tracker.simulation_end()
+        tracker_manager.simulation_end()
         traci.close(False) # close the connection to SUMO
 
-        return net_tracker.trackers
+        return tracker_manager.trackers
 
     def specific_config(self, configuration):
         """ Run the simulation with a specific configuration for self.runs times """
