@@ -39,7 +39,17 @@ def test_simulator():
 
     plot_simulation_graph(conf[0][0][1].metrics_for_stats['completed_lifetimes'], conf[0][0][1].completed_at_time)
 
+def test_gui(configuration=0):
+    """
+    Test the GUI of the simulation.
+    """
+    modify_rou_flow_rate('lightSync.rou.xml', 0.3, setting.STEP)  # Change 'input.xml' to the path of your XML file
+    sim = Simulation(setting.STEP, setting.WARM_UP, 1)
+    sim.run_gui(configuration=configuration)
+
+
 if __name__ == '__main__':
-    test_throughput()
+    # test_throughput()
     # test_simulator()
+    test_gui(configuration=15)
     

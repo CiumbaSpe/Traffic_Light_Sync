@@ -41,6 +41,10 @@ class Simulation:
             print(f"### Running simulation {i}")
             observations.append(self.simulation_run(configuration, gui=False))
         return observations
+    
+    def run_gui(self, configuration=0):
+        """ Run the simulation with a specific configuration for self.runs times """
+        self.simulation_run(configuration, gui=True)
 
 if __name__ == '__main__':
     pass
